@@ -107,10 +107,11 @@ class Interface:
             D=int(self.texto3.get())
             E=int(self.texto4.get())
             S=int(self.texto5.get())
-            resultados = [None] * 3
+            resultados = [[]] * 3
             resultados[0] = opt.distribucion_hexagonal_neumaticos(X, Y, D, E, S)
             resultados[1] = opt.distribucion_maxima_densidad(X,Y,D,E,S)
             resultados[2] = opt.optimizar_distribucion_neumaticos(X,Y,D,E,S)
+            #resultados[3] = opt.backtracking(X,Y,D,E,S)
             btr = []
             for i in resultados:
                 if len(btr) < len(i):
