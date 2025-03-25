@@ -3,10 +3,12 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
 import time
-import opt
+
+from pyparsing import results
+
 import plot
-
-
+import matplotlib.pyplot as plt
+import opt
 
 
 
@@ -18,7 +20,7 @@ class Interface:
         root.state('zoomed') #iniciar en ventana completa
         width = root.winfo_screenwidth() #obtiene el tamaño de la pantalla
         height = root.winfo_screenheight() 
-        self.appFrame.configure(height=700, width=1000)
+        self.appFrame.configure(height=900, width=1000)
         self.appFrame.pack(side="top")
         self.mainlabel = ttk.Label(self.appFrame)
         self.mainlabel.configure(
@@ -105,10 +107,18 @@ class Interface:
             D=int(self.texto3.get())
             E=int(self.texto4.get())
             S=int(self.texto5.get())
-            btr=opt.backtracking(X,Y,D,E,S)
-            #print(btr)
+            resultados = [None] * 3
+            resultados[0] = opt.distribucion_hexagonal_neumaticos(X, Y, D, E, S)
+            resultados[1] = opt.distribucion_maxima_densidad(X,Y,D,E,S)
+            resultados[2] = opt.optimizar_distribucion_neumaticos(X,Y,D,E,S)
+            btr = []
+            for i in resultados:
+                if len(btr) < len(i):
+                    btr = i
+            print(btr)
             plot.plot_neumaticos(X,Y,D, btr)
-        except:
+        except ValueError:
+            print(ValueError)
             messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros')
 
     def comprobar(self):
