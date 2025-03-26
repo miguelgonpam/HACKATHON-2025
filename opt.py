@@ -21,28 +21,7 @@ def voraz(lote_w, lote_h, d, e, s):
         x += d + e  # Moverse en la dirección X (horizontal)
 
     return posiciones
-
-
-def backtracking(lote_w, lote_h, d, e, s, posiciones=[], max_posiciones=[]):
-    """
-    lote_w: Ancho del lote
-    lote_h: Alto del lote
-    d     : Diámetro del lote
-    e     : Separación entre neumáticos
-    s     : Separación entre los neumáticos y los bordes del lote
-    """
-    if len(posiciones) > len(max_posiciones):
-        max_posiciones[:] = posiciones[:]
-
-    for x in range(s + d // 2, lote_w - s - d // 2 + 1, d + e):
-        for y in range(s + d // 2, lote_h - s - d // 2 + 1, d + e):
-            if all((x - px) ** 2 + (y - py) ** 2 >= (d + e) ** 2 for px, py in posiciones):
-                posiciones.append((round(x, 2), round(y, 2)))
-                backtracking(lote_w, lote_h, d, e, s, posiciones, max_posiciones)
-                posiciones.pop()
-
-    return max_posiciones
-
+voraz.nombre = 'Estrategia Voraz'
 
 def distribucion_hexagonal_neumaticos(ancho_lote, largo_lote, diametro_neumatico, espacio_entre_neumaticos, separacion_bordes):
     coordenadas = []
@@ -78,7 +57,7 @@ def distribucion_hexagonal_neumaticos(ancho_lote, largo_lote, diametro_neumatico
         fila += 1
 
     return coordenadas
-
+distribucion_hexagonal_neumaticos.nombre = 'Distribución Hexagonal'
 
 def distribucion_maxima_densidad(ancho_lote, largo_lote, diametro_neumatico, espacio_entre_neumaticos,
                                  separacion_bordes):
@@ -116,7 +95,7 @@ def distribucion_maxima_densidad(ancho_lote, largo_lote, diametro_neumatico, esp
         fila += 1
 
     return coordenadas
-
+distribucion_maxima_densidad.nombre = 'Distribución de Máxima Densidad'
 
 def optimizar_distribucion_neumaticos(ancho_lote, largo_lote, diametro_neumatico, espacio_entre_neumaticos,
                                       separacion_bordes):
@@ -149,7 +128,7 @@ def optimizar_distribucion_neumaticos(ancho_lote, largo_lote, diametro_neumatico
         y += paso_y
 
     return coordenadas
-
+optimizar_distribucion_neumaticos.nombre = 'Distribución optimizada'
 
 def no_hay_colision(coordenadas_existentes, x_nuevo, y_nuevo, radio):
     for x, y in coordenadas_existentes:
