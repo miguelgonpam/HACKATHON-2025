@@ -19,4 +19,4 @@ func.nombre = 'Nombre de la estrategia'
 ```
 
 El fichero `plot.py`contiene lo necesario para mostrar la solución gráficamente. <br/>
-El fichero `main.py`contiene la interfaz de usuario que solicita los datos y permite elegir el algoritmo (de los que están en `opt.py`) para resolver el problema.
+El fichero `main.py`contiene la interfaz de usuario que solicita los datos y selecciona el algoritmo que ofrece la mejor sulución (de los que están en `opt.py`) para resolver el problema.
