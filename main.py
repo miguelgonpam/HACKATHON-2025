@@ -1,19 +1,22 @@
 #!/usr/bin/python3
 import tkinter as tk
 import tkinter.ttk as ttk
-from tkinter import messagebox, simpledialog
-import time
+from tkinter import messagebox
 import inspect
 import json
-#from pyparsing import results
-
 import plot
-#import matplotlib.pyplot as plt
 import opt
 
 
-
 class Interface:
+
+    ancho_lote = 0
+    largo_lote = 0
+    diametro_neumatico = 0
+    separacion_neumatico = 0
+    separacion_bordes = 0
+    num_neumaticos = 0
+    coordenadas = []
 
     def __init__(self, master=None):
         self._job = None
@@ -21,67 +24,60 @@ class Interface:
         root.state('zoomed') #iniciar en ventana completa
         width = root.winfo_screenwidth() #obtiene el tamaño de la pantalla
         height = root.winfo_screenheight() 
-        self.appFrame.configure(height=900, width=1000)
+        self.appFrame.configure(height=height, width=width)
         self.appFrame.pack(side="top")
         self.mainlabel = ttk.Label(self.appFrame)
         self.mainlabel.configure(
             anchor="center", font="{Times New Roman} 36 {bold}", foreground="#003e3e", justify="center", text='TESEO\nOptimización de almacenamiento de cubiertas de camión', wraplength=900)
-        self.mainlabel.place(anchor="center", x=500, y=100)
+        self.mainlabel.place(anchor="center", x=width / 2, y=height / 6)
 
-        self.label1= ttk.Label(self.appFrame)
-        self.label1.place(anchor="center", height=50, width=220, x=int(width/4), y=int(height/3)+50)
-        self.label1.configure(anchor="center",
-                             font="{Times New Roman} 14 {}", justify="left", text='Ancho del lote')
-        self.label2= ttk.Label(self.appFrame)
-        self.label2.place(anchor="center", height=50, width=220, x=int(width/4), y=int(height/3)+105)
-        self.label2.configure(anchor="center",
-                             font="{Times New Roman} 14 {}", justify="left", text='Largo del lote')
-        self.label3= ttk.Label(self.appFrame)
-        self.label3.place(anchor="center", height=50, width=220, x=int(width/4), y=int(height/3)+160)
-        self.label3.configure(anchor="center",
-                             font="{Times New Roman} 14 {}", justify="left", text='Diámetro del neumático')
-        self.label4= ttk.Label(self.appFrame)
-        self.label4.place(anchor="center", height=50, width=220, x=int(width/4), y=int(height/3)+215)
-        self.label4.configure(anchor="center",
-                             font="{Times New Roman} 14 {}", justify="left", text='Separación entre neumáticos')
-        self.label5= ttk.Label(self.appFrame)
-        self.label5.place(anchor="center", height=50, width=220, x=int(width/4), y=int(height/3)+270)
-        self.label5.configure(anchor="center",
-                             font="{Times New Roman} 14 {}", justify="left", text='Separación a los bordes')
+        # Nuevo frame para agrupar los elementos
+        self.inputFrame = tk.Frame(self.appFrame, borderwidth=2, relief="ridge", background="lightgray")
+        self.inputFrame.place(anchor="center", x=width / 2, y=height / 2, width=450, height=350)  # Ubicación centrada
 
+        # Labels dentro del nuevo frame
+        self.label1 = ttk.Label(self.inputFrame, text='Ancho del lote', font=("Times New Roman", 14),
+                                background="lightgray")
+        self.label1.place(anchor="center", height=30, width=220, x=150, y=50)
 
-        self.texto1 = ttk.Entry(self.appFrame)
-        self.texto1.place(anchor="center", height=50, width=150, x=int(width/4)+200, y=int(height/3)+50 )
-        self.texto2 = ttk.Entry(self.appFrame)
-        self.texto2.place(anchor="center", height=50, width=150, x=int(width/4)+200, y=int(height/3)+105 )
-        self.texto3 = ttk.Entry(self.appFrame)
-        self.texto3.place(anchor="center", height=50, width=150, x=int(width/4)+200, y=int(height/3)+160 )
-        self.texto4 = ttk.Entry(self.appFrame)
-        self.texto4.place(anchor="center", height=50, width=150, x=int(width/4)+200, y=int(height/3)+215 )
-        self.texto5 = ttk.Entry(self.appFrame)
-        self.texto5.place(anchor="center", height=50, width=150, x=int(width/4)+200, y=int(height/3)+270 )
+        self.label2 = ttk.Label(self.inputFrame, text='Largo del lote', font=("Times New Roman", 14),
+                                background="lightgray")
+        self.label2.place(anchor="center", height=30, width=220, x=150, y=100)
 
-        #COMBOX SELECCIONAR ALGORITMO
-        #self.button1 = ttk.Button(self.appFrame, command=self.seleccion)
-        #self.button1.configure(cursor="hand2", text='SOLUCIÓN SELECCIONADA', compound="top")
-        #self.button1.place(anchor="s", height=50, width=190, x=int(width/4)+500, y=int(height/3)+350)
+        self.label3 = ttk.Label(self.inputFrame, text='Diámetro del neumático', font=("Times New Roman", 14),
+                                background="lightgray")
+        self.label3.place(anchor="center", height=30, width=220, x=150, y=150)
 
-        self.button2 = ttk.Button(self.appFrame, command=self.optima)
-        self.button2.configure(cursor="hand2", text='SOLUCIÓN ÓPTIMA', compound="top")
-        self.button2.place(anchor="s", height=50, width=380, x=int(width/4)+90, y=int(height/3)+350)
+        self.label4 = ttk.Label(self.inputFrame, text='Separación entre neumáticos', font=("Times New Roman", 14),
+                                background="lightgray")
+        self.label4.place(anchor="center", height=30, width=220, x=150, y=200)
 
-        #COMBOX SELECCIONAR ALGORITMO
-        #self.algorithmbox = ttk.Combobox(self.appFrame)#waypoint
-        #funcs =[func.nombre
-        #        for _, func in inspect.getmembers(opt, inspect.isfunction)
-        #        if hasattr(func, "nombre")]
-        #self.algorithmbox.configure(cursor="hand2", state="readonly",
-        #                            values=tuple(funcs))
-        #self.algorithmbox.place(anchor="center", height=30, width=190, x=int(width/4)+500, y=int(height/3)+270)
-        
+        self.label5 = ttk.Label(self.inputFrame, text='Separación a los bordes', font=("Times New Roman", 14),
+                                background="lightgray")
+        self.label5.place(anchor="center", height=30, width=220, x=150, y=250)
 
-        
-        
+        # Entradas dentro del nuevo frame
+        self.texto1 = ttk.Entry(self.inputFrame)
+        self.texto1.place(anchor="center", height=30, width=150, x=350, y=50)
+
+        self.texto2 = ttk.Entry(self.inputFrame)
+        self.texto2.place(anchor="center", height=30, width=150, x=350, y=100)
+
+        self.texto3 = ttk.Entry(self.inputFrame)
+        self.texto3.place(anchor="center", height=30, width=150, x=350, y=150)
+
+        self.texto4 = ttk.Entry(self.inputFrame)
+        self.texto4.place(anchor="center", height=30, width=150, x=350, y=200)
+
+        self.texto5 = ttk.Entry(self.inputFrame)
+        self.texto5.place(anchor="center", height=30, width=150, x=350, y=250)
+
+        # Botón dentro del nuevo frame
+        self.button2 = ttk.Button(self.inputFrame, text='SOLUCIÓN ÓPTIMA', command=self.optima, cursor="hand2")
+        self.button2.place(anchor="s", height=40, width=300, x=225, y=320)
+
+        self.button2 = ttk.Button(self.inputFrame, text='GENERAR JSON', command=self.generar_json(), cursor="hand2")
+        self.button2.place(anchor="s", height=40, width=300, x=225, y=370)
 
         self.mainwindow = self.appFrame
 
@@ -91,75 +87,89 @@ class Interface:
         """
         
         self.mainwindow.mainloop()
-        
-
-    #def seleccion(self):
-    #    try:
-    #        X=int(self.texto1.get())
-    #        Y=int(self.texto2.get())
-    #        D=int(self.texto3.get())
-    #        E=int(self.texto4.get())
-    #        S=int(self.texto5.get())
-    #        sel = self.algorithmbox.selection_get()
-    #        funciones = {
-    #            func.nombre: func
-    #            for _, func in inspect.getmembers(opt, inspect.isfunction)
-    #            if hasattr(func, "nombre")  # Filtrar solo las que tienen nombre personalizado
-    #        }
-    #        
-    #        seleccion=funciones[sel](X,Y,D,E,S)
-    #        coordenadas = [{"x": x, "y": y} for x, y in seleccion]
-    #
-    #        data = {"num": len(coordenadas), "coordenadas": coordenadas}
-    #
-    #        # Guardar en un archivo .json
-    #        with open("output.json", "w", encoding="utf-8") as file:
-    #            json.dump(data, file)
-    #
-    #        plot.plot_neumaticos(X,Y,D, seleccion)
-    #    except:
-    #        messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros')
 
 
-    def optima(self):
+    def verificar_datos(self):
+        """
+        Comprueba que los datos introducidos son correctos.
+
+        Raises:
+            ValueError: si alguno de los datos no es correcto.
+        """
+
+        self.ancho_lote = abs(int(self.texto1.get()))
+        self.largo_lote = abs(int(self.texto2.get()))
+        self.diametro_neumatico = abs(int(self.texto3.get()))
+        self.separacion_neumatico = abs(int(self.texto4.get()))
+        self.separacion_bordes = abs(int(self.texto5.get()))
+
+
+    def generar_json(self):
+        """
+        Genera un archivo json con los datos del cálculo de las coordenadas de los neumáticos.
+        """
+
         try:
-            X=int(self.texto1.get())
-            Y=int(self.texto2.get())
-            D=int(self.texto3.get())
-            E=int(self.texto4.get())
-            S=int(self.texto5.get())
+            #Comprobar si los datos son correctos
+            self.verificar_datos()
 
-            funciones = [
-                func for _ ,func in inspect.getmembers(opt, inspect.isfunction)
-                if hasattr(func, "nombre")  # Filtrar solo las que tienen nombre personalizado
-            ]
+            if len(self.coordenadas) <= 0:
+                self.coordenadas = self.obtener_datos()
 
-            resultados = [[]] * len(funciones)
-            cont=0
-            for fun in funciones:
-                resultados[cont]=funciones[cont](X,Y,D,E,S)
-                cont+=1
-            btr = []
-            for i in resultados:
-                if len(btr) < len(i):
-                    btr = i
-        
-            
-            
-
-
-            coordenadas = [{"x": x, "y": y} for x, y in btr]
-            data = {"num": len(coordenadas), "coordenadas": coordenadas}
+            self.coordenadas = [{"x": x, "y": y} for x, y in self.coordenadas]
+            data = {"width": self.ancho_lote, "height": self.largo_lote, "num_cols_neumaticos": self.num_neumaticos,
+                    "coordenadas": self.coordenadas}
 
             # Guardar en un archivo .json
             with open("output.json", "w", encoding="utf-8") as file:
                 json.dump(data, file, indent=1)
 
-            plot.plot_neumaticos(X,Y,D, btr)
+        except ValueError:
+            print(ValueError)
+            messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros')
+
+
+    def optima(self):
+        """
+        Obtiene los datos del cálculo de las coordenadas y muestra el gráfico de las coordenadas.
+        """
+
+        try:
+            #Comprobar si los datos son correctos
+            self.verificar_datos()
+
+            if len(self.coordenadas) <= 0:
+                self.coordenadas = self.obtener_datos()
+
+            plot.plot_neumaticos(self.ancho_lote,self.largo_lote,self.diametro_neumatico, self.coordenadas)
             
         except ValueError:
             print(ValueError)
-            messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros') 
+            messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros')
+
+
+    def obtener_datos(self):
+        """
+        Obtiene el mejor conjunto de datos de los cálculos de las coordenadas de los neumáticos.
+        """
+
+        funciones = [
+            func for _, func in inspect.getmembers(opt, inspect.isfunction)
+            if hasattr(func, "nombre")  # Filtrar solo las que tienen nombre personalizado
+        ]
+
+        resultados = [[]] * len(funciones)
+        cont = 0
+        for fun in funciones:
+            resultados[cont] = funciones[cont](self.ancho_lote, self.largo_lote, self.diametro_neumatico,
+                                               self.separacion_neumatico, self.separacion_bordes)
+            cont += 1
+        btr = []
+        for i in resultados:
+            if len(btr) < len(i):
+                btr = i
+
+        return btr
 
 
 global app
