@@ -135,19 +135,16 @@ class Interface:
             ]
 
             resultados = [[]] * len(funciones)
-            print(funciones)
             cont=0
             for fun in funciones:
                 resultados[cont]=funciones[cont](X,Y,D,E,S)
                 cont+=1
-
-            print(resultados)
             btr = []
             for i in resultados:
                 if len(btr) < len(i):
                     btr = i
         
-            plot.plot_neumaticos(X,Y,D, btr)
+            
             
 
 
@@ -156,7 +153,9 @@ class Interface:
 
             # Guardar en un archivo .json
             with open("output.json", "w", encoding="utf-8") as file:
-                json.dump(data, file)
+                json.dump(data, file, indent=1)
+
+            plot.plot_neumaticos(X,Y,D, btr)
             
         except ValueError:
             print(ValueError)
