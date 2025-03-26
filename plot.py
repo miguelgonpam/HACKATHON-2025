@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_neumaticos(lote_w, lote_h, d, posiciones):
+def plot_neumaticos(lote_w, lote_h, d, posiciones, num_divisiones=10):
     """
     Genera un gráfico de un lote con neumáticos en posiciones dadas.
     
@@ -9,13 +9,19 @@ def plot_neumaticos(lote_w, lote_h, d, posiciones):
     :param lote_h: Alto del lote.
     :param d: Diámetro de los neumáticos.
     :param posiciones: Lista de tuplas con las coordenadas de los centros de los neumáticos.
+    :param num_divisiones: Número de divisiones para la cuadrícula.
     """
     # Crear la figura y los ejes
     fig, ax = plt.subplots(figsize=(6, 12))
     ax.set_xlim(0, lote_w)
     ax.set_ylim(0, lote_h)
-    ax.set_xticks(np.arange(0, lote_w + 10, 10))
-    ax.set_yticks(np.arange(0, lote_h + 10, 10))
+    
+    # Determinar el espaciado dinámico de la cuadrícula
+    step_x = max(lote_w / num_divisiones, 1)  # Asegura que el espaciado mínimo sea 1
+    step_y = max(lote_h / num_divisiones, 1)
+    
+    ax.set_xticks(np.arange(0, lote_w + step_x, step_x))
+    ax.set_yticks(np.arange(0, lote_h + step_y, step_y))
     ax.grid(True, linestyle="--", alpha=0.5)
 
     # Dibujar el lote como un rectángulo
@@ -38,3 +44,4 @@ def plot_neumaticos(lote_w, lote_h, d, posiciones):
     plt.gca().set_aspect('equal', adjustable='box')
     plt.title("Distribución de neumáticos en el lote")
     plt.show()
+
