@@ -44,6 +44,10 @@ data = {"num": len(coordenadas), "coordenadas": coordenadas}
 with open("output.json", "w", encoding="utf-8") as file:
                 json.dump(data, file, indent=1)
 
+print("\n")
+print("SOLUCIÓN >\n")
+print(json.dumps(data))
+
 
 
 
