@@ -3,11 +3,12 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
 import time
-
-from pyparsing import results
+import inspect
+import json
+#from pyparsing import results
 
 import plot
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import opt
 
 
@@ -60,14 +61,23 @@ class Interface:
         self.texto5 = ttk.Entry(self.appFrame)
         self.texto5.place(anchor="center", height=50, width=150, x=int(width/4)+200, y=int(height/3)+270 )
 
-        self.button1 = ttk.Button(self.appFrame, command=self.voraz)
-        self.button1.configure(cursor="hand2", text='SOLUCIÓN RÁPIDA', compound="top")
-        self.button1.place(anchor="s", height=50, width=190, x=int(width/4), y=int(height/3)+350)
+        self.button1 = ttk.Button(self.appFrame, command=self.seleccion)
+        self.button1.configure(cursor="hand2", text='SOLUCIÓN SELECCIONADA', compound="top")
+        self.button1.place(anchor="s", height=50, width=190, x=int(width/4)+500, y=int(height/3)+350)
 
-        self.button2 = ttk.Button(self.appFrame, command=self.backtracking)
+        self.button2 = ttk.Button(self.appFrame, command=self.optima)
         self.button2.configure(cursor="hand2", text='SOLUCIÓN ÓPTIMA', compound="top")
-        self.button2.place(anchor="s", height=50, width=190, x=int(width/4)+195, y=int(height/3)+350)
-        #self.solvebutton.bind("<ButtonPress>", self.comprobar)
+        self.button2.place(anchor="s", height=50, width=380, x=int(width/4)+90, y=int(height/3)+350)
+
+
+        self.algorithmbox = ttk.Combobox(self.appFrame)#waypoint
+        funcs =[func.nombre
+                for _, func in inspect.getmembers(opt, inspect.isfunction)
+                if hasattr(func, "nombre")]
+        self.algorithmbox.configure(cursor="hand2", state="readonly",
+                                    values=tuple(funcs))
+        self.algorithmbox.place(anchor="center", height=30, width=190, x=int(width/4)+500, y=int(height/3)+270)
+        
 
         
         
@@ -78,29 +88,39 @@ class Interface:
         """
         Run the program, display the GUI
         """
-        #app.displayStateOnGrid('000000000')
-        #app.gif_loading.place_forget()
-        #self.refreshFrame()
-        #self.mainwindow.after(0, app.refreshGIF, 0)
+        
         self.mainwindow.mainloop()
-        #str= self.texto1.get()
-        #print(str)
+        
 
-    def voraz(self):
+    def seleccion(self):
         try:
             X=int(self.texto1.get())
             Y=int(self.texto2.get())
             D=int(self.texto3.get())
             E=int(self.texto4.get())
             S=int(self.texto5.get())
-            vor=opt.voraz(X,Y,D,E,S)
-            #print(vor)
-            plot.plot_neumaticos(X,Y,D, vor)
+            sel = self.algorithmbox.selection_get()
+            funciones = {
+                func.nombre: func
+                for _, func in inspect.getmembers(opt, inspect.isfunction)
+                if hasattr(func, "nombre")  # Filtrar solo las que tienen nombre personalizado
+            }
+            
+            seleccion=funciones[sel](X,Y,D,E,S)
+            coordenadas = [{"x": x, "y": y} for x, y in seleccion]
+
+            data = {"num": len(coordenadas), "coordenadas": coordenadas}
+
+            # Guardar en un archivo .json
+            with open("output.json", "w", encoding="utf-8") as file:
+                json.dump(data, file)
+
+            plot.plot_neumaticos(X,Y,D, seleccion)
         except:
             messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros')
 
 
-    def backtracking(self):
+    def optima(self):
         try:
             X=int(self.texto1.get())
             Y=int(self.texto2.get())
@@ -116,26 +136,24 @@ class Interface:
             for i in resultados:
                 if len(btr) < len(i):
                     btr = i
-            print(btr)
+        
             plot.plot_neumaticos(X,Y,D, btr)
+            
+            coordenadas = [{"x": x, "y": y} for x, y in btr]
+            data = {"num": len(coordenadas), "coordenadas": coordenadas}
+
+            # Guardar en un archivo .json
+            with open("output.json", "w", encoding="utf-8") as file:
+                json.dump(data, file)
+            
         except ValueError:
             print(ValueError)
-            messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros')
-
-    def comprobar(self):
-        val=self.texto1.get()
-        self.texto1.delete(0,100)
-        if val != "":
-            if  val in self.valores:
-                messagebox.showinfo('Echa el freno madaleno!', f'El número {val} ya está registrado')
-            else:
-                self.valores.append(val) 
+            messagebox.showinfo('ERROR', 'Valores incorrectos, asegúrese de introducir números enteros') 
 
 
 global app
 root = tk.Tk()
 root.title('Teseo')
-    
 root.iconbitmap(default="favicon.ico")
 app = Interface(root)
 app.run()
