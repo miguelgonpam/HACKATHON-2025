@@ -10,6 +10,7 @@ def plot_neumaticos(lote_w, lote_h, d, posiciones, num_divisiones=10):
     :param d: Diámetro de los neumáticos.
     :param posiciones: Lista de tuplas con las coordenadas de los centros de los neumáticos.
     :param num_divisiones: Número de divisiones para la cuadrícula.
+    :param num_cols_neumaticos: Número de columnas de neumáticos en total del lote.
     """
     # Crear la figura y los ejes
     fig, ax = plt.subplots(figsize=(6, 12))
@@ -42,6 +43,6 @@ def plot_neumaticos(lote_w, lote_h, d, posiciones, num_divisiones=10):
 
     # Mostrar el gráfico
     plt.gca().set_aspect('equal', adjustable='box')
-    plt.title("Distribución de neumáticos en el lote")
+    plt.title(f"Distribución de neumáticos en el lote\nColumnas en el lote: {len(posiciones)}")
     plt.show()
 

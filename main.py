@@ -33,7 +33,7 @@ class Interface:
 
         # Nuevo frame para agrupar los elementos
         self.inputFrame = tk.Frame(self.appFrame, borderwidth=2, relief="ridge", background="lightgray")
-        self.inputFrame.place(anchor="center", x=width / 2, y=height / 2, width=450, height=350)  # Ubicación centrada
+        self.inputFrame.place(anchor="center", x=width / 2, y=height / 2, width=450, height=430)  # Ubicación centrada
 
         # Labels dentro del nuevo frame
         self.label1 = ttk.Label(self.inputFrame, text='Ancho del lote', font=("Times New Roman", 14),
@@ -76,7 +76,7 @@ class Interface:
         self.button2 = ttk.Button(self.inputFrame, text='SOLUCIÓN ÓPTIMA', command=self.optima, cursor="hand2")
         self.button2.place(anchor="s", height=40, width=300, x=225, y=320)
 
-        self.button2 = ttk.Button(self.inputFrame, text='GENERAR JSON', command=self.generar_json(), cursor="hand2")
+        self.button2 = ttk.Button(self.inputFrame, text='GENERAR JSON', command=self.generar_json, cursor="hand2")
         self.button2.place(anchor="s", height=40, width=300, x=225, y=370)
 
         self.mainwindow = self.appFrame
@@ -113,8 +113,7 @@ class Interface:
             #Comprobar si los datos son correctos
             self.verificar_datos()
 
-            if len(self.coordenadas) <= 0:
-                self.coordenadas = self.obtener_datos()
+            self.coordenadas, self.num_neumaticos = self.obtener_datos()
 
             self.coordenadas = [{"x": x, "y": y} for x, y in self.coordenadas]
             data = {"width": self.ancho_lote, "height": self.largo_lote, "num_cols_neumaticos": self.num_neumaticos,
@@ -138,10 +137,9 @@ class Interface:
             #Comprobar si los datos son correctos
             self.verificar_datos()
 
-            if len(self.coordenadas) <= 0:
-                self.coordenadas = self.obtener_datos()
+            self.coordenadas, self.num_neumaticos = self.obtener_datos()
 
-            plot.plot_neumaticos(self.ancho_lote,self.largo_lote,self.diametro_neumatico, self.coordenadas)
+            plot.plot_neumaticos(self.ancho_lote,self.largo_lote,self.diametro_neumatico, self.coordenadas, self.num_neumaticos)
             
         except ValueError:
             print(ValueError)
@@ -169,7 +167,7 @@ class Interface:
             if len(btr) < len(i):
                 btr = i
 
-        return btr
+        return btr, len(btr)
 
 
 global app
