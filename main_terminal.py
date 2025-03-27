@@ -38,7 +38,8 @@ for i in resultados:
         btr = i
 
 coordenadas = [{"x": x, "y": y} for x, y in btr]
-data = {"num": len(coordenadas), "coordenadas": coordenadas}
+data = {"width": val[0], "height": val[1], "num_cols_neumaticos": len(coordenadas),
+                    "coordenadas": coordenadas}
 
 # Guardar en un archivo .json
 with open("output.json", "w", encoding="utf-8") as file:
